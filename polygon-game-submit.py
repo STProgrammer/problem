@@ -17,26 +17,44 @@ def parse_input(input_str):
 
 # Function taken from https://stackoverflow.com/questions/20677795/how-do-i-compute-the-intersection-point-of-two-lines
 # and from Bing chat
-def line_intersection(line1, line2):
+def line_intersection(line1, line2, epsilon=1e-9):
     x1, y1 = line1[0]
     x2, y2 = line1[1]
     x3, y3 = line2[0]
     x4, y4 = line2[1]
 
-    d = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4)
-    if d == 0:
-        return None
+    # Denominator for the intersection point formulas
+    denom = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4)
+    if abs(denom) < epsilon:
+        return None  # Lines are parallel or coincident
 
-    t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / d
-    u = -((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3)) / d
+    # Numerator calculations for intersection point (Px, Py)
+    Px_num = (x1 * y2 - y1 * x2) * (x3 - x4) - (x1 - x2) * (x3 * y4 - y3 * x4)
+    Py_num = (x1 * y2 - y1 * x2) * (y3 - y4) - (y1 - y2) * (x3 * y4 - y3 * x4)
+    Px = Px_num / denom
+    Py = Py_num / denom
+    intersection_point = (Px, Py)
 
-    if not(0 <= t <= 1 and 0 <= u <= 1):
-        return None
+    # Helper function to check if a point is on a segment
+    def is_point_on_segment(P, A, B, epsilon=1e-9):
+        x, y = P
+        x1, y1 = A
+        x2, y2 = B
+        # Collinearity check
+        cross_product = (x2 - x1) * (y - y1) - (y2 - y1) * (x - x1)
+        if abs(cross_product) > epsilon:
+            return False
+        # Bound check for being within segment endpoints
+        if min(x1, x2) - epsilon <= x <= max(x1, x2) + epsilon and \
+           min(y1, y2) - epsilon <= y <= max(y1, y2) + epsilon:
+            return True
+        return False
 
-    x = x1 + t * (x2 - x1)
-    y = y1 + t * (y2 - y1)
-
-    return x, y
+    # Verify if the intersection point lies on both segments
+    if is_point_on_segment(intersection_point, line1[0], line1[1]) and is_point_on_segment(intersection_point, line2[0], line2[1]):
+        return intersection_point
+    else:
+        return None  # Intersection point is outside the segments
 
 
 def divide_polygon_by_line(polygon, line):
@@ -157,8 +175,6 @@ for i in range(N):
 
 
 print_largest_area(polygon, lines)
-
-
 
 
 
