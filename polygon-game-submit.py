@@ -22,16 +22,19 @@ def line_intersection(line1, line2, epsilon=1e-7):
     x3, y3 = line2[0]
     x4, y4 = line2[1]
 
-    # Denominator for the intersection point formulas
-    denom = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4)
+    # Calculate the directional vectors for the lines and the determinant (denom)
+    dx1, dy1 = x1 - x2, y1 - y2
+    dx2, dy2 = x3 - x4, y3 - y4
+    denom = dx1 * dy2 - dy1 * dx2
+
     if abs(denom) < epsilon:
         return None  # Lines are parallel or coincident
 
-    # Numerator calculations for intersection point (Px, Py)
-    Px_num = (x1 * y2 - y1 * x2) * (x3 - x4) - (x1 - x2) * (x3 * y4 - y3 * x4)
-    Py_num = (x1 * y2 - y1 * x2) * (y3 - y4) - (y1 - y2) * (x3 * y4 - y3 * x4)
-    Px = Px_num / denom
-    Py = Py_num / denom
+    # Calculate determinants to find intersection point
+    det1 = x1 * y2 - y1 * x2
+    det2 = x3 * y4 - y3 * x4
+    Px = (det1 * dx2 - dx1 * det2) / denom
+    Py = (det1 * dy2 - dy1 * det2) / denom
     intersection_point = (Px, Py)
 
     # Helper function to check if a point is on a segment
