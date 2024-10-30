@@ -1,4 +1,4 @@
-
+# Solution to "Polygon game" from Kattis: https://open.kattis.com/submissions/14775606
 
 # Find intersection between two lines
 # Function taken from https://stackoverflow.com/questions/20677795/how-do-i-compute-the-intersection-point-of-two-lines
